@@ -1,199 +1,79 @@
-# OPUS One Operation — React + Tailwind Build Plan
+# OPUS One Operation — React + Tailwind Shell
 
-This document captures the full modular build strategy for OPUS / One Operation, aligning with the existing .NET microservice ecosystem while outlining the front-end architecture, design system, feature roadmap, and developer experience expectations.
-
----
-
-## 1. Foundational Architecture
-
-### Tech Stack
-- **Frontend:** React (Vite), TailwindCSS, React Router v7
-- **State Management:** Zustand (UI state), React Query (server state)
-- **Auth:** Supabase Auth or .NET Identity JWT
-- **Backend Integration:** Gateway API → Domain microservices
-- **Deployment:** Vercel or containerized Kubernetes
-
-### Core Concepts
-- Multi-tenant routing pattern: `/:companyId/*`
-- Global providers for user, tenant, permissions, and theme data
-- Layout engine with side navigation, topbar, and flexible workspace region
-- Tailwind-driven responsive design with dark/light mode tokenization
+This repository now contains a runnable front-end foundation for the multi-tenant OPUS / One Operation platform. It wires up React + Vite, TailwindCSS, React Query, Zustand, and React Router with the navigation, layout engine, and placeholder feature modules described in the build plan. Use it as the launch pad for hooking into your existing .NET microservices and Supabase/.NET Identity authentication flows.
 
 ---
 
-## 2. Design System (UI/UX Foundation)
+## Getting Started
 
-### Tailwind Tokens
-- Brand palette: OPUS navy, teal, and warm neutrals
-- Elevation: soft Apple-style shadow tiers
-- Radii: `xl`, `2xl`, `3xl`
-- Typography: Poppins variable font
+> **Prerequisites**
+> * Node.js 18+
+> * npm 10+
 
-### Components
-- **Atomic:** Buttons, Inputs, Selects, Badges, Cards, Modals, Sheets, Skeletons, Tabs, Accordions, Avatars
-- **Composite:** DataTable with pagination, Stepper/Wizard, Filter bar + saved filters, Timeline, Info drawer (Customer 360), Multi-view tabs
-
----
-
-## 3. Module-by-Module Build Plan
-
-### 3.1 Authentication & Onboarding
-- Login → MFA → Organization → Role
-- First-run setup for company info, regions, users, PriceBook starter
-- Technician/office staff invite flow
-
-### 3.2 Customer 360
-- Customer list, details, properties, activity, files, jobs, equipment, invoices
-- Expandable information blocks with inline edit
-- Quick actions (Create Job/Quote, Message Customer)
-- Sliding detail panels for tasks, notes, communications
-
-### 3.3 Properties & Equipment
-- Property detail layout with zones and attachments
-- Equipment cards with brand detection, age, model/serial, warranty
-- Lifecycle timeline (install → service → replacements)
-- Quick-action drawer for adding equipment
-
-### 3.4 Jobs / Work Orders
-- Job list/detail/progress + technician mobile view
-- Status badges, scheduling drag/drop, PriceBook picker, parts list
-- Integrated messaging, checklists, photos, signatures
-
-### 3.5 Dispatch Console
-- Map + list hybrid with technician tiles
-- Drag job → technician assignment, route preview, ETA tracking
-- Real-time updates feed, Kanban lanes, time-window grid, multi-filter toolbar
-
-### 3.6 PriceBook
-- Category tree view
-- Service configuration (labor, materials, flat-rate rules, upsells)
-- Multi-location overrides with job/quote integration
-
-### 3.7 Sales Hub
-- Quote builder with bundles, options, financing
-- Proposal “Present Mode” for in-home selling
-- Opportunity pipeline stages with configurator drawer, financing calculator, e-sign module
-
-### 3.8 Invoicing & Payments
-- Quotes → Jobs → Invoices → Payments lifecycle
-- Stripe integration, transaction ledger, PDF generator
-- Payment links and customer portal checkout
-
-### 3.9 Forms & Procedures
-- No-code form builder with conditional logic
-- Attach forms to jobs/customers/compliance workflows
-- Technician mobile form entry with eSign
-
-### 3.10 Inventory & Parts
-- Warehouses + trucks, transfer requests, reorder triggers
-- Job consumption tracking and vendor catalog integration
-
-### 3.11 Reports & Insights
-- Report marketplace, custom dashboards, comparative ranges
-- Job conversion metrics, technician KPIs, time-series charts
-
-### 3.12 AI Command Center
-- Central panel for lead enrichment, workflow suggestions, PriceBook optimization, compliance, job summaries, customer insights, automations
-- Unified context engine per customer, job, proposal, or company
-
-### 3.13 Roles & Permissions
-- Role templates, custom builder, action/field-level permissions, multi-location boundaries
-
----
-
-## 4. Developer Experience & Project Structure
-
-```
-opus-frontend/
-  src/
-    app/
-      providers/
-      router/
-      layouts/
-      hooks/
-      stores/
-      utils/
-      services/
-      lib/
-    components/
-      ui/
-      layout/
-      data/
-      forms/
-    features/
-      auth/
-        pages/
-        components/
-        api/
-      customers/
-      properties/
-      equipment/
-      jobs/
-      dispatch/
-      pricebook/
-      sales/
-      billing/
-      inventory/
-      reports/
-      compliance/
-      ai/
-      settings/
-    assets/
-      icons/
-      images/
-      logos/
-    styles/
-      globals.css
-      tailwind.css
-    index.css
-    main.tsx
-    App.tsx
-  public/
-  package.json
-  tsconfig.json
-  tailwind.config.js
-  postcss.config.js
-  vite.config.js
-  README.md
+```bash
+npm install
+npm run dev        # start the Vite dev server on http://localhost:5173
+npm run build      # type-check + bundle the production build
+npm test           # run Vitest + Testing Library smoke tests
 ```
 
-### API Integration Patterns
-- `services/api.ts` with typed endpoints
-- React Query per module with normalized error handling
-- Global toast system and WebSocket/SSE support for real-time updates
+If your environment blocks access to scoped npm packages (e.g., `@tanstack/react-query`), configure the registry mirror first:
+
+```bash
+npm config set registry https://registry.npmjs.org/
+```
 
 ---
 
-## 5. Workflow System Integration
-- Later-phase automation engine: “When X happens → Do Y” builder
-- Triggers: job status, invoice paid, equipment age, missed ETA
-- Actions: send message, update status, add tag, create task
-- UI: automation list + builder wizard backed by event bus
+## Architecture Overview
+
+| Layer | Purpose |
+| --- | --- |
+| `src/app/providers` | Query Client, theming, and future global contexts. |
+| `src/app/router` | Multi-tenant router rooted at `/:companyId/*` plus the `/auth/login` onboarding route. |
+| `src/app/layouts` | Glass-inspired dashboard layout: sidebar navigation + top bar workspace header. |
+| `src/components` | Token-driven UI atoms (buttons, inputs, KPI cards) and layout composites. |
+| `src/features/*` | Module directories (customers, jobs, dispatch, pricebook, sales, AI, etc.) with `pages`, `components`, and `api` placeholders. |
+| `src/styles` | Tailwind tokens + global styles (rounded radii, Apple-style shadows, OPUS palette). |
+
+Key libraries:
+
+- **React + Vite** for lightning-fast development.
+- **TailwindCSS** for design tokens (navy/teal/sand palette, `2xl/3xl` radii, soft shadows) and dark-mode toggling.
+- **React Router** for nested layouts and future data routers (upgrade to v7 when released).
+- **@tanstack/react-query** for server state cache + streaming updates.
+- **Zustand** for UI state such as theming and upcoming multi-panel layout controls.
 
 ---
 
-## 6. Technician Mobile View
-- iOS/Android Safari-optimized: today’s jobs, job detail, checklists, inventory usage, notes/photos, in-field quoting, payment collection, navigation + ETA
-- Offline-friendly caching, one-handed UI, large touch targets
+## Feature Shells Included
+
+- **Authentication**: `/auth/login` route with glassmorphism UI ready for Supabase or .NET Identity wiring.
+- **Workspace Overview**: KPI cards, field activity feed, embedded Customer List, and Jobs board.
+- **Customers 360**: Searchable list with quick actions.
+- **Jobs / Dispatch**: Job board tiles and technician console scaffolding.
+- **PriceBook & Sales Hub**: Category tree preview + bundle cards showing how to extend modules.
+- **AI Command Center**: Insight cards + automation CTA.
+
+Each page is powered by tokenized components (`Button`, `KpiCard`, `SearchInput`, etc.) so you can iterate on branding in one place.
 
 ---
 
-## 7. Theming & Branding
-- One Operation logo (glass square + circular emblem + flowing lines)
-- Navy/white/teal palette, rounded elements (`2xl`/`3xl`), glass layers
-- Smooth transitions, micro-interactions, consistent spacing scale
+## Extending the Shell
+
+1. **Hook up real APIs** via `services/api.ts` (create typed clients for your gateway) and module-level React Query hooks.
+2. **Implement permissions** by adding auth/tenant providers inside `AppProviders`.
+3. **Expand module screens** inside `src/features/*/pages` following the established layout primitives.
+4. **Add workflow automation** surfaces using the AI Command Center cards as a starting point.
+5. **Adopt routing conventions**: keep tenant-aware paths nested under `/:companyId/...` to simplify RBAC and analytics.
 
 ---
 
-## 8. Phased Implementation Timeline
+## Roadmap Alignment
 
-| Phase | Scope | Duration |
-| --- | --- | --- |
-| **Phase 1 — Foundation** | Repo setup, Tailwind system, Auth + onboarding, global layout, Customer List/Detail v1 | 2–3 weeks |
-| **Phase 2 — Core HVAC Workflow** | Properties + Equipment, Jobs v1, read-only PriceBook, Dispatch list mode, Quote builder v1 | 3–5 weeks |
-| **Phase 3 — Operational Depth** | Dispatch drag-drop, advanced jobs, Inventory + parts, Payments engine, AI Command Center integration | 5–8 weeks |
-| **Phase 4 — Enterprise Layer** | Roles/permissions, multi-location admin, automations, reporting, compliance center | 6–10 weeks |
+This codebase is intentionally lightweight but mirrors the roadmap described previously:
 
----
+- It ships the **Phase 1** scaffolding (repo setup, Tailwind system, auth screen, global layout, Customer List, Jobs overview).
+- It leaves clear extension points for **Phases 2–4**: drag-and-drop dispatch, full PriceBook configuration, automation builder, reporting, and compliance centers.
 
-This plan delivers a full copyable blueprint for implementing OPUS One Operation with React, Tailwind, and the supporting .NET microservices.
+Contributions should continue to document UX and API contracts inside module-level `README.md` files so every squad can work independently across the OPUS One Operation surface area.
