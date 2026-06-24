@@ -1,0 +1,21 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f8fafc;
+}
+
+.dark body {
+  background: #050f1d;
+}
+
+::selection {
+  background: rgba(20, 184, 166, 0.3);
+}
